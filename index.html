@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fde3ef">
+<title>A Única Que Eu Quero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Caveat:wght@500;700&family=Nunito:wght@400;600;800&display=swap">
+<style>
+/* Layout: uma carta com trilha sonora — jukebox anos 50 em rosa e lilás, piso xadrez de lanchonete, gatinhos. Visual único (claro) por escolha. */
+:root {
+  --creme: #fff6fa;
+  --rosa-claro: #fde3ef;
+  --rosa: #f5a3c7;
+  --rosa-forte: #d9468e;
+  --lilas-claro: #eee2fb;
+  --lilas: #c4a2ea;
+  --lilas-forte: #8350c2;
+  --tinta: #4b2148;
+  --tinta-suave: #7d5679;
+  --noite: #2c1a45;
+  --vinil: #231726;
+  --f-display: "Pacifico", "Brush Script MT", cursive;
+  --f-carta: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  --f-ui: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+button, canvas { -webkit-tap-highlight-color: transparent; }
+.mini { -webkit-appearance: none; -webkit-user-select: none; user-select: none; }
+body {
+  margin: 0;
+  background: linear-gradient(180deg, var(--rosa-claro) 0%, var(--lilas-claro) 55%, var(--rosa-claro) 100%);
+  color: var(--tinta);
+  font-family: var(--f-ui);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100%;
+}
+#ceu { position: fixed; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+main { position: relative; z-index: 1; padding-inline: 16px; padding-block: 24px 120px; display: flex; flex-direction: column; align-items: center; gap: 56px; }
+section { width: 100%; max-width: 680px; }
+h1, h2 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.25; }
+.rotulo { font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--lilas-forte); }
+
+/* ---------- Abertura / toca-discos ---------- */
+.abertura { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; padding-top: 12px; }
+.abertura h1 { font-size: clamp(2.4rem, 9vw, 3.8rem); color: var(--rosa-forte); text-shadow: 3px 3px 0 var(--lilas); }
+.abertura p.sub { margin: 0; max-width: 34ch; color: var(--tinta-suave); font-size: 1.05rem; }
+
+.jukebox {
+  position: relative; width: min(340px, 100%); padding: 26px 22px 22px;
+  background: linear-gradient(180deg, var(--rosa) 0%, var(--lilas) 100%);
+  border-radius: 170px 170px 28px 28px;
+  box-shadow: 0 0 0 6px var(--creme), 0 0 0 10px var(--rosa-forte), 0 24px 40px -18px rgba(75,33,72,.55);
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.jukebox::before { /* luzinhas */
+  content: ""; position: absolute; top: 10px; right: 10px; bottom: auto; left: 10px; height: 150px; border-radius: 160px 160px 0 0;
+  border: 3px dotted var(--creme); border-bottom: 0; opacity: .85;
+  animation: piscar 1.4s steps(2) infinite paused;
+}
+body.tocando .jukebox::before { animation-play-state: running; }
+@keyframes piscar { 50% { opacity: .35; } }
+
+.toca { position: relative; width: 230px; max-width: 100%; height: 0; padding-bottom: min(230px, 100%); }
+@supports (aspect-ratio: 1) { .toca { height: auto; padding-bottom: 0; aspect-ratio: 1; } }
+.vinil {
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 34%, rgba(255,255,255,.06) 34.5% 35%, transparent 35.5%),
+    repeating-radial-gradient(circle at 50% 50%, var(--vinil) 0 2px, #33223a 2.5px 3.5px),
+    var(--vinil);
+  box-shadow: inset 0 0 0 4px #110a13, 0 8px 18px rgba(44,26,69,.4);
+  animation: girar 3.2s linear infinite paused;
+}
+.vinil::after { /* reflexo */
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: 50%;
+  background: conic-gradient(from 20deg, transparent 0 10%, rgba(255,255,255,.14) 14%, transparent 20% 60%, rgba(255,255,255,.1) 64%, transparent 70%);
+}
+body.tocando .vinil { animation-play-state: running; }
+@keyframes girar { to { transform: rotate(360deg); } }
+.selo {
+  position: absolute; top: 31%; right: 31%; bottom: 31%; left: 31%; border-radius: 50%;
+  background: radial-gradient(circle, var(--creme) 0 6%, var(--rosa-forte) 7% 9%, var(--lilas-claro) 10%);
+  display: grid; place-items: center;
+}
+.selo svg { width: 78%; height: auto; }
+.braco {
+  position: absolute; top: -6px; right: -14px; width: 16px; height: 130px;
+  transform-origin: 50% 10px; transform: rotate(-4deg); transition: transform .8s cubic-bezier(.5,1.6,.5,1);
+}
+.braco::before { content: ""; position: absolute; top: 0; left: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--creme); box-shadow: 0 0 0 3px var(--rosa-forte); }
+.braco::after { content: ""; position: absolute; top: 12px; left: 7px; width: 6px; height: 112px; border-radius: 4px; background: linear-gradient(var(--creme), #e9d6ea); box-shadow: 1px 2px 3px rgba(0,0,0,.25); }
+.braco span { position: absolute; bottom: -8px; left: 2px; width: 16px; height: 22px; border-radius: 4px; background: var(--rosa-forte); z-index: 1; }
+body.tocando .braco { transform: rotate(22deg); }
+
+.btn-tocar {
+  font: 800 1rem/1 var(--f-ui); letter-spacing: .02em;
+  color: var(--creme); background: var(--rosa-forte);
+  border: 0; border-radius: 999px; padding: 14px 24px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 10px;
+  box-shadow: 0 4px 0 #a92d6b; transition: transform .15s, box-shadow .15s;
+}
+.btn-tocar:hover { transform: translateY(-1px); }
+.btn-tocar:active { transform: translateY(3px); box-shadow: 0 1px 0 #a92d6b; }
+.btn-tocar:focus-visible, .mini:focus-visible, .trevo:focus-visible, .btn-estrela:focus-visible { outline: 3px solid var(--lilas-forte); outline-offset: 3px; }
+.faixa { font-size: .85rem; color: var(--tinta); background: var(--creme); border-radius: 999px; padding: 4px 14px; }
+.faixa b { color: var(--rosa-forte); }
+
+/* gatinho sentado ao lado do jukebox */
+.gato-espia { position: absolute; left: -46px; bottom: -8px; width: 86px; }
+.gato-espia .rabo { transform-origin: 92px 120px; animation: abanar 2.4s ease-in-out infinite; }
+@keyframes abanar { 50% { transform: rotate(14deg); } }
+@media (max-width: 440px) { .gato-espia { left: -18px; width: 68px; } }
+
+/* ---------- Piso xadrez ---------- */
+.xadrez {
+  width: 100%; max-width: 680px; height: 28px; border-radius: 6px;
+  background: conic-gradient(var(--lilas) 25%, var(--creme) 0 50%, var(--lilas) 0 75%, var(--creme) 0) 0 0 / 28px 28px;
+  opacity: .9; box-shadow: 0 0 0 3px var(--rosa);
+}
+
+/* ---------- Carta ---------- */
+.carta {
+  position: relative; background: var(--creme);
+  background-image: repeating-linear-gradient(180deg, transparent 0 41px, rgba(196,162,234,.45) 41px 42px);
+  background-position: 0 30px;
+  border-radius: 6px; padding: 54px clamp(22px, 6vw, 56px) 44px clamp(34px, 8vw, 72px);
+  box-shadow: 0 2px 0 var(--lilas), 0 26px 50px -24px rgba(75,33,72,.45);
+  transform: rotate(-.6deg);
+}
+.carta::before { /* margem da folha */
+  content: ""; position: absolute; top: 0; bottom: 0; left: clamp(20px, 5vw, 44px); width: 2px; background: rgba(217,70,142,.35);
+}
+.fita { position: absolute; top: -14px; width: 110px; height: 30px; background: rgba(245,163,199,.75); }
+.fita.e { left: 18px; transform: rotate(-8deg); }
+.fita.d { right: 18px; transform: rotate(7deg); background: rgba(196,162,234,.75); }
+.carta h2 { font-size: clamp(1.8rem, 6vw, 2.4rem); color: var(--rosa-forte); margin-bottom: 8px; }
+.carta p { font-family: var(--f-carta); font-weight: 500; font-size: clamp(1.35rem, 4.6vw, 1.6rem); line-height: 42px; margin: 0 0 42px; max-width: 60ch; }
+.carta p:last-of-type { margin-bottom: 20px; }
+mark { background: linear-gradient(180deg, transparent 55%, rgba(245,163,199,.75) 55% 90%, transparent 90%); color: inherit; padding: 0 2px; }
+mark.l { background: linear-gradient(180deg, transparent 55%, rgba(196,162,234,.8) 55% 90%, transparent 90%); }
+.assinatura { display: flex; justify-content: flex-end; align-items: center; gap: 12px; font-family: var(--f-carta); font-size: 1.6rem; line-height: 1.2; text-align: right; }
+.assinatura strong { font-family: var(--f-display); font-weight: 400; font-size: 2rem; color: var(--lilas-forte); display: block; }
+.pata-carimbo { width: 56px; flex: none; transform: rotate(-14deg); opacity: .85; }
+
+/* ---------- Raspadinha ---------- */
+.titulo-secao { text-align: center; display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.titulo-secao h2 { font-size: clamp(1.8rem, 6vw, 2.3rem); color: var(--lilas-forte); }
+.titulo-secao p { margin: 0 auto; max-width: 42ch; color: var(--tinta-suave); }
+.bilhete {
+  position: relative; max-width: 420px; margin: 0 auto; border-radius: 18px; overflow: hidden;
+  background: var(--creme); box-shadow: 0 0 0 3px var(--rosa-forte), 0 16px 30px -16px rgba(75,33,72,.5);
+}
+.bilhete .topo { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--rosa-forte); color: var(--creme); font-weight: 800; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+.bilhete .topo span:last-child { font-variant-numeric: tabular-nums; }
+.premio { position: relative; height: 170px; display: grid; place-items: center; text-align: center; padding: 16px; background: radial-gradient(circle, var(--rosa-claro), var(--creme)); }
+.premio .grande { font-family: var(--f-display); font-size: clamp(1.9rem, 7vw, 2.4rem); color: var(--rosa-forte); line-height: 1.2; }
+.premio .peq { font-family: var(--f-carta); font-size: 1.4rem; color: var(--tinta); }
+#raspa { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; transition: opacity .7s; }
+#raspa.limpo { opacity: 0; pointer-events: none; }
+
+/* ---------- Pedidos ---------- */
+.pedidos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.pedido { position: relative; border-radius: 20px; padding: 22px; min-height: 250px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 14px; text-align: center; overflow: hidden; }
+.pedido h3 { margin: 0; font-family: var(--f-ui); font-size: 1.05rem; font-weight: 800; }
+.pedido .resposta { font-family: var(--f-carta); font-size: 1.45rem; line-height: 1.25; min-height: 3.6em; display: flex; align-items: center; transition: opacity .6s; }
+.noite { background: radial-gradient(ellipse at 30% 0%, #4d2f73, var(--noite) 70%); color: var(--creme); }
+.noite h3 { color: var(--rosa); }
+.estrelinhas { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; background-image:
+  radial-gradient(1.5px 1.5px at 12% 22%, #fff, transparent), radial-gradient(1px 1px at 30% 60%, #fff, transparent),
+  radial-gradient(1.5px 1.5px at 72% 18%, #fff, transparent), radial-gradient(1px 1px at 88% 52%, #fff, transparent),
+  radial-gradient(1.2px 1.2px at 52% 38%, #fff, transparent), radial-gradient(1px 1px at 20% 82%, #fff, transparent),
+  radial-gradient(1.4px 1.4px at 64% 78%, #fff, transparent), radial-gradient(1px 1px at 92% 88%, #fff, transparent);
+  opacity: .8; }
+.cadente { position: absolute; top: 18%; left: -30%; width: 120px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--rosa), #fff); transform: rotate(18deg); opacity: 0; }
+.chk { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.chk:checked ~ .cadente { animation: voar 1.3s ease-out forwards; }
+.chk:focus-visible ~ .btn-estrela, .chk:focus-visible ~ .trevo { outline: 3px solid var(--lilas-forte); outline-offset: 3px; }
+.resposta .depois { display: none; }
+.resposta .antes { opacity: .6; font-family: var(--f-ui); font-size: .95rem; }
+.chk:checked ~ .resposta .antes { display: none; }
+.chk:checked ~ .resposta .depois { display: inline; animation: surgir .8s ease-out both; }
+.noite .chk:checked ~ .resposta .depois { animation-delay: 1.2s; }
+@keyframes surgir { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.chk:checked ~ .btn-estrela { background: var(--creme); }
+@keyframes voar { 0% { opacity: 0; left: -30%; top: 12%; } 15% { opacity: 1; } 100% { opacity: 0; left: 110%; top: 52%; } }
+.btn-estrela { display: inline-block; -webkit-user-select: none; user-select: none; position: relative; font: 800 .95rem/1 var(--f-ui); color: var(--noite); background: var(--rosa); border: 0; border-radius: 999px; padding: 12px 20px; cursor: pointer; }
+.btn-estrela:hover { background: var(--creme); }
+.jardim { background: linear-gradient(180deg, var(--creme), var(--lilas-claro)); box-shadow: inset 0 0 0 3px var(--lilas); }
+.jardim h3 { color: var(--lilas-forte); }
+.trevo { display: inline-block; background: none; border: 0; padding: 4px; cursor: pointer; border-radius: 50%; -webkit-tap-highlight-color: transparent; }
+.trevo svg { width: 104px; height: 104px; display: block; transition: transform 1s cubic-bezier(.3,1.4,.5,1); }
+.trevo:hover svg { transform: rotate(-10deg) scale(1.05); }
+.chk:checked ~ .trevo svg { transform: rotate(360deg) scale(1.08); }
+
+/* ---------- Final ---------- */
+.final { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.final svg { width: min(320px, 100%); height: auto; }
+.final h2 { font-size: clamp(2rem, 7.5vw, 3rem); color: var(--rosa-forte); text-shadow: 2px 2px 0 var(--lilas); }
+.final p { margin: 0; color: var(--tinta-suave); max-width: 36ch; }
+.coracao-cauda { stroke-dasharray: 400; stroke-dashoffset: 0; }
+
+/* ---------- Aviso de prévia (some quando o código roda) ---------- */
+.aviso-previa { width: 100%; max-width: 680px; background: var(--noite); color: var(--creme); border-radius: 16px; padding: 16px 18px; font-size: .95rem; line-height: 1.5; box-shadow: 0 0 0 3px var(--rosa); }
+.aviso-previa strong { color: var(--rosa); }
+html.js .aviso-previa { display: none; }
+
+/* ---------- Mini player ---------- */
+.mini {
+  position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 5;
+  width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--lilas-forte); color: var(--creme);
+  box-shadow: 0 0 0 4px var(--creme), 0 10px 22px -8px rgba(44,26,69,.6);
+  display: grid; place-items: center;
+}
+.mini svg { width: 24px; height: 24px; }
+body.tocando .mini { animation: pulsar 1s ease-in-out infinite; }
+@keyframes pulsar { 50% { box-shadow: 0 0 0 7px var(--rosa), 0 10px 22px -8px rgba(44,26,69,.6); } }
+.ico-pause { display: none; }
+body.tocando .ico-play { display: none; }
+body.tocando .ico-pause { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+
+<script>document.documentElement.className += " js";</script>
+<canvas id="ceu" aria-hidden="true"></canvas>
+
+<main>
+  <div class="aviso-previa" id="avisoPrevia" role="note">
+    <strong>Abriu só uma prévia da carta.</strong> Assim a música e as animações não funcionam.
+    Toque em <strong>Compartilhar</strong> e escolha <strong>Abrir no Safari</strong> (ou no Chrome), que aí funciona tudo.
+  </div>
+  <!-- ABERTURA -->
+  <section class="abertura">
+    <span class="rotulo">Uma carta com trilha sonora</span>
+    <h1>Pra você, meu bem</h1>
+    <p class="sub">Aperta o play, deixa a música tocar e lê com calma. Escrevi cada palavra pensando em você.</p>
+
+    <div class="jukebox">
+      <svg class="gato-espia" viewBox="0 0 120 140" aria-hidden="true">
+        <path class="rabo" d="M92 120 C118 116 120 86 104 74" fill="none" stroke="#c4a2ea" stroke-width="10" stroke-linecap="round"/>
+        <ellipse cx="60" cy="104" rx="36" ry="32" fill="#c4a2ea"/>
+        <path d="M33 42 L37 10 L58 28 Z M87 42 L83 10 L62 28 Z" fill="#c4a2ea"/>
+        <path d="M38 36 L40 18 L52 28 Z M82 36 L80 18 L68 28 Z" fill="#f5a3c7"/>
+        <circle cx="60" cy="54" r="30" fill="#c4a2ea"/>
+        <path d="M45 52 q6 -6 12 0 M63 52 q6 -6 12 0" fill="none" stroke="#4b2148" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="42" cy="64" r="5" fill="#f5a3c7" opacity=".8"/><circle cx="78" cy="64" r="5" fill="#f5a3c7" opacity=".8"/>
+        <path d="M56 60 h8 l-4 5 z" fill="#d9468e"/>
+        <path d="M60 65 q-4 5 -8 2 M60 65 q4 5 8 2" fill="none" stroke="#4b2148" stroke-width="2" stroke-linecap="round"/>
+        <path d="M30 60 h14 M30 66 l14 -2 M90 60 h-14 M90 66 l-14 -2" stroke="#4b2148" stroke-width="1.5" stroke-linecap="round"/>
+        <ellipse cx="46" cy="134" rx="10" ry="6" fill="#d9c2f2"/><ellipse cx="74" cy="134" rx="10" ry="6" fill="#d9c2f2"/>
+      </svg>
+
+      <div class="toca">
+        <div class="vinil">
+          <div class="selo">
+            <svg viewBox="0 0 60 50" aria-hidden="true">
+              <path d="M12 22 L14 4 L26 14 Z M48 22 L46 4 L34 14 Z" fill="#f5a3c7"/>
+              <circle cx="30" cy="28" r="18" fill="#f5a3c7"/>
+              <path d="M21 26 q3 -3 6 0 M33 26 q3 -3 6 0" fill="none" stroke="#4b2148" stroke-width="2" stroke-linecap="round"/>
+              <path d="M28 31 h4 l-2 3 z" fill="#d9468e"/>
+            </svg>
+          </div>
+        </div>
+        <div class="braco" aria-hidden="true"><span></span></div>
+      </div>
+
+      <button class="btn-tocar" id="btnTocar" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path class="ico-play" d="M7 4v16l13-8z" fill="currentColor"/><path class="ico-pause" d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+        <span id="txtTocar">Clique para tocar a música</span>
+      </button>
+      <span class="faixa">Lado A · <b>trilha sonora desta carta</b></span>
+    </div>
+  </section>
+
+  <div class="xadrez" aria-hidden="true"></div>
+
+  <!-- CARTA -->
+  <section>
+    <article class="carta">
+      <span class="fita e" aria-hidden="true"></span><span class="fita d" aria-hidden="true"></span>
+      <h2>Meu bem,</h2>
+      <p>Toda vez que olho pra você, sinto que <mark>ganhei na loteria</mark>. Toda vez que você me chama de <mark class="l">meu bem</mark>, o meu coração fica cada vez mais apaixonado por você. E se um dia eu vir uma <mark class="l">estrela cadente</mark> ou encontrar um <mark>trevo da sorte</mark>, pode ter certeza de que vou pedir pra que a gente fique junto pro resto das nossas vidas.</p>
+      <p>E toda vez que você diz que está se achando feia, eu escuto isso por um ouvido e sai pelo outro, porque pra mim, aos meus olhos, você sempre vai estar linda. Seja enquanto você dorme, ou enquanto eu estou andando ao seu lado de mãos dadas, admirando cada detalhe da sua beleza e torcendo para que esses momentos passem extremamente devagar, só pra ter mais tempo de ficar admirando a <mark class="l">obra de arte</mark> que você é, meu bem.</p>
+      <p>Talvez você não tenha percebido, mas no nosso primeiro encontro eu fazia questão de puxar algum assunto pra você ficar falando, e eu só escutando e concordando com tudo, enquanto os meus olhos brilhavam e eu só conseguia pensar em como fazer pra que você se sinta <mark>segura e confortável</mark> ao meu lado.</p>
+      <p>Sei que você tem as suas armaduras por coisas que aconteceram anteriormente, mas, com o tempo, espero conseguir tirar esse peso de você.</p>
+      <div class="assinatura">
+        <svg class="pata-carimbo" viewBox="0 0 60 60" aria-hidden="true">
+          <ellipse cx="30" cy="38" rx="14" ry="12" fill="#d9468e"/>
+          <ellipse cx="14" cy="24" rx="6" ry="7.5" fill="#d9468e"/><ellipse cx="24" cy="14" rx="6" ry="7.5" fill="#d9468e"/>
+          <ellipse cx="36" cy="14" rx="6" ry="7.5" fill="#d9468e"/><ellipse cx="46" cy="24" rx="6" ry="7.5" fill="#d9468e"/>
+        </svg>
+        <div>Com todo o meu amor,<strong>Bruno</strong></div>
+      </div>
+    </article>
+  </section>
+
+  <!-- RASPADINHA -->
+  <section id="secRaspa">
+    <div class="titulo-secao">
+      <span class="rotulo">Bilhete premiado</span>
+      <h2>Raspadinha da sorte</h2>
+      <p>Já que olhar pra você é como ganhar na loteria, raspa aí pra ver qual foi o meu prêmio.</p>
+    </div>
+    <div class="bilhete">
+      <div class="topo"><span>Loteria do coração</span><span>Nº 0001</span></div>
+      <div class="premio">
+        <div>
+          <div class="grande">O prêmio é você</div>
+          <div class="peq">o maior que eu poderia ganhar ♥</div>
+        </div>
+        <canvas id="raspa" aria-label="Área para raspar com o dedo ou o mouse"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEDIDOS -->
+  <section id="secPedidos">
+    <div class="titulo-secao">
+      <span class="rotulo">Promessa da carta</span>
+      <h2>Hora de fazer um pedido</h2>
+      <p>Uma estrela cadente e um trevo de quatro folhas. Eu já sei o que vou pedir.</p>
+    </div>
+    <div class="pedidos">
+      <div class="pedido noite">
+        <input class="chk" type="checkbox" id="chkEstrela">
+        <div class="estrelinhas" aria-hidden="true"></div>
+        <div class="cadente" aria-hidden="true"></div>
+        <h3>A estrela cadente</h3>
+        <p class="resposta" aria-live="polite">
+          <span class="antes">Toque no botão e olhe pro céu.</span>
+          <span class="depois">Pedido feito: que a gente fique junto pro resto das nossas vidas.</span>
+        </p>
+        <label class="btn-estrela" for="chkEstrela" id="btnEstrela">Chamar uma estrela</label>
+      </div>
+      <div class="pedido jardim">
+        <input class="chk" type="checkbox" id="chkTrevo">
+        <h3>O trevo da sorte</h3>
+        <label class="trevo" for="chkTrevo" id="trevo" aria-label="Colher o trevo de quatro folhas">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <path d="M50 92 C52 78 50 66 50 56" fill="none" stroke="#8350c2" stroke-width="4" stroke-linecap="round"/>
+            <g transform="translate(50 50)">
+              <path d="M0 0 C-4 -10 -22 -14 -22 -26 C-22 -36 -8 -38 0 -28 C8 -38 22 -36 22 -26 C22 -14 4 -10 0 0 Z" fill="#f5a3c7"/>
+              <path transform="rotate(90)" d="M0 0 C-4 -10 -22 -14 -22 -26 C-22 -36 -8 -38 0 -28 C8 -38 22 -36 22 -26 C22 -14 4 -10 0 0 Z" fill="#c4a2ea"/>
+              <path transform="rotate(180)" d="M0 0 C-4 -10 -22 -14 -22 -26 C-22 -36 -8 -38 0 -28 C8 -38 22 -36 22 -26 C22 -14 4 -10 0 0 Z" fill="#f5a3c7"/>
+              <path transform="rotate(270)" d="M0 0 C-4 -10 -22 -14 -22 -26 C-22 -36 -8 -38 0 -28 C8 -38 22 -36 22 -26 C22 -14 4 -10 0 0 Z" fill="#c4a2ea"/>
+              <circle r="4" fill="#d9468e"/>
+            </g>
+          </svg>
+        </label>
+        <p class="resposta" aria-live="polite">
+          <span class="antes">Cada folha é um coraçãozinho. Toque pra colher.</span>
+          <span class="depois">Pedido feito de novo, só pra garantir: você e eu, pra sempre.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="xadrez" aria-hidden="true"></div>
+
+  <!-- FINAL -->
+  <section class="final">
+    <svg viewBox="0 0 260 200" role="img" aria-label="Dois gatinhos sentados lado a lado, com os rabos formando um coração">
+      <path class="coracao-cauda" d="M110 184 C124 180 129 166 130 150 C102 122 92 78 113 68 C124 63 130 72 130 82" fill="none" stroke="#f5a3c7" stroke-width="9" stroke-linecap="round"/>
+      <path class="coracao-cauda" d="M150 184 C136 180 131 166 130 150 C158 122 168 78 147 68 C136 63 130 72 130 82" fill="none" stroke="#c4a2ea" stroke-width="9" stroke-linecap="round"/>
+      <!-- gata rosa (de costas) -->
+      <ellipse cx="78" cy="152" rx="40" ry="44" fill="#f5a3c7"/>
+      <circle cx="78" cy="92" r="30" fill="#f5a3c7"/>
+      <path d="M52 80 L54 52 L72 68 Z M104 80 L102 52 L84 68 Z" fill="#f5a3c7"/>
+      <path d="M57 74 L58 60 L67 68 Z M99 74 L98 60 L89 68 Z" fill="#fde3ef"/>
+      <!-- gato lilás (de costas) -->
+      <ellipse cx="182" cy="152" rx="40" ry="44" fill="#c4a2ea"/>
+      <circle cx="182" cy="92" r="30" fill="#c4a2ea"/>
+      <path d="M156 80 L158 52 L176 68 Z M208 80 L206 52 L188 68 Z" fill="#c4a2ea"/>
+      <path d="M161 74 L162 60 L171 68 Z M203 74 L202 60 L193 68 Z" fill="#eee2fb"/>
+      <!-- brilhinhos -->
+      <path d="M130 26 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z" fill="#d9468e"/>
+      <path d="M40 30 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#8350c2"/>
+      <path d="M222 36 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#8350c2"/>
+    </svg>
+    <h2>Você é a única que eu quero</h2>
+    <p>Hoje, amanhã e em todas as músicas que ainda vamos ouvir juntos.</p>
+  </section>
+</main>
+
+<button class="mini" id="mini" type="button" aria-label="Tocar ou pausar a música">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path class="ico-play" d="M7 4v16l13-8z" fill="currentColor"/><path class="ico-pause" d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>
+</button>
+
+<audio id="musica" preload="auto" loop playsinline webkit-playsinline src="musica.mp3"></audio>
+
+<script>
+(function () {
+  const reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+  /* ---------- Rolagem automática (começa com a música) ---------- */
+  const VELOCIDADE = 24;            // pixels por segundo: ritmo calmo de leitura
+  const raiz = document.documentElement;
+  const etapa = { raspa: false, estrela: false, trevo: false };
+  let rolando = false, concluida = false, ultimo = 0, resto = 0, esperarAte = 0, inicioAgendado = null;
+  function posicao() { return window.pageYOffset || raiz.scrollTop || 0; }
+  function fimDaPagina() { return Math.max(0, raiz.scrollHeight - window.innerHeight); }
+  function topoDe(id) { return document.getElementById(id).getBoundingClientRect().top + posicao() - 20; }
+  function alvo() {
+    if (!etapa.raspa) return Math.min(topoDe('secRaspa'), fimDaPagina());
+    if (!(etapa.estrela && etapa.trevo)) return Math.min(topoDe('secPedidos'), fimDaPagina());
+    return fimDaPagina();
+  }
+  function quadro(t) {
+    if (!rolando) return;
+    if (!ultimo) ultimo = t;
+    const dt = Math.min(t - ultimo, 100) / 1000; ultimo = t;
+    if (Date.now() >= esperarAte) {
+      const y = posicao(), a = alvo();
+      if (y < a - 1) {
+        resto += VELOCIDADE * dt;
+        const passo = Math.floor(resto);
+        if (passo >= 1) { resto -= passo; window.scrollTo(0, Math.min(y + passo, a)); }
+      } else if (etapa.raspa && etapa.estrela && etapa.trevo) {
+        concluida = true; pararRolagem(); return;
+      }
+    }
+    requestAnimationFrame(quadro);
+  }
+  function iniciarRolagem() {
+    if (rolando || concluida || inicioAgendado) return;
+    inicioAgendado = setTimeout(function () {
+      inicioAgendado = null;
+      if (!ligado || concluida) return;
+      rolando = true; ultimo = 0; resto = 0;
+      raiz.style.scrollBehavior = 'auto';
+      requestAnimationFrame(quadro);
+    }, 1500);
+  }
+  function pararRolagem() {
+    rolando = false;
+    if (inicioAgendado) { clearTimeout(inicioAgendado); inicioAgendado = null; }
+    raiz.style.scrollBehavior = '';
+  }
+  // se ela mexer na tela, a rolagem espera alguns segundos e continua de onde ela parou
+  ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) {
+    window.addEventListener(ev, function (e) {
+      if (e.target && e.target.closest && e.target.closest('button')) return; // tocar/pausar e pedidos não contam
+      esperarAte = Date.now() + 5000;
+    }, { passive: true });
+  });
+
+  /* ---------- Música ---------- */
+  const audio = document.getElementById('musica');
+  audio.loop = true;
+  audio.volume = 1;
+  audio.addEventListener('ended', function () { audio.currentTime = 0; tentarTocar(); });
+  const txt = document.getElementById('txtTocar');
+  let ligado = false; // a experiência (disco + rolagem) segue o botão, mesmo se o aparelho segurar o áudio
+
+  function tentarTocar() {
+    try {
+      const p = audio.play();
+      if (p && p.catch) p.catch(function () {
+        if (ligado) txt.textContent = 'Toque de novo para ouvir a música';
+      });
+    } catch (e) { /* navegadores antigos */ }
+  }
+  function mostrar() {
+    document.body.classList.toggle('tocando', ligado);
+    txt.textContent = ligado ? 'Clique para pausar a música' : 'Clique para tocar a música';
+  }
+  function alternar() {
+    if (!ligado) {
+      ligado = true; tentarTocar(); mostrar(); chuva(18); iniciarRolagem();
+    } else if (audio.paused) {
+      tentarTocar(); // estava ligado mas o áudio não saiu: tenta de novo com este toque
+      txt.textContent = 'Clique para pausar a música';
+    } else {
+      ligado = false; audio.pause(); mostrar(); pararRolagem();
+    }
+  }
+  audio.addEventListener('playing', function () { if (ligado) txt.textContent = 'Clique para pausar a música'; });
+  document.getElementById('btnTocar').addEventListener('click', alternar);
+  document.getElementById('mini').addEventListener('click', alternar);
+
+  /* ---------- Céu de corações e patinhas ---------- */
+  const ceu = document.getElementById('ceu');
+  const ctx = ceu.getContext('2d');
+  const cores = ['#f5a3c7', '#c4a2ea', '#d9468e', '#8350c2'];
+  let W = 0, H = 0, dpr = 1, itens = [];
+  function medir() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    ceu.width = W * dpr; ceu.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function novo(y, extra) {
+    return {
+      x: Math.random() * W, y: y == null ? Math.random() * H : y,
+      s: 6 + Math.random() * 10, v: 0.2 + Math.random() * 0.45,
+      o: extra ? 0.75 : 0.18 + Math.random() * 0.22,
+      fase: Math.random() * Math.PI * 2, tipo: Math.random() < 0.6 ? 'c' : 'p',
+      cor: cores[(Math.random() * cores.length) | 0], extra: !!extra
+    };
+  }
+  function coracao(x, y, s) {
+    ctx.beginPath();
+    ctx.moveTo(x, y + s * 0.35);
+    ctx.bezierCurveTo(x - s, y - s * 0.35, x - s * 0.45, y - s, x, y - s * 0.45);
+    ctx.bezierCurveTo(x + s * 0.45, y - s, x + s, y - s * 0.35, x, y + s * 0.35);
+    ctx.fill();
+  }
+  function pata(x, y, s) {
+    const r = s * 0.28;
+    ctx.beginPath(); ctx.ellipse(x, y + s * 0.2, s * 0.45, s * 0.36, 0, 0, Math.PI * 2); ctx.fill();
+    [[-0.5, -0.25], [-0.18, -0.55], [0.18, -0.55], [0.5, -0.25]].forEach(function (d) {
+      ctx.beginPath(); ctx.arc(x + d[0] * s, y + d[1] * s, r, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+  function desenhar() {
+    ctx.clearRect(0, 0, W, H);
+    itens.forEach(function (it) {
+      ctx.globalAlpha = it.o; ctx.fillStyle = it.cor;
+      const dx = Math.sin(it.fase) * 8;
+      if (it.tipo === 'c') coracao(it.x + dx, it.y, it.s); else pata(it.x + dx, it.y, it.s * 0.8);
+    });
+    ctx.globalAlpha = 1;
+  }
+  function passo() {
+    const vel = document.body.classList.contains('tocando') ? 1.8 : 1;
+    itens.forEach(function (it) { it.y -= it.v * vel * (it.extra ? 2.2 : 1); it.fase += 0.015; });
+    itens = itens.filter(function (it) { return !(it.extra && it.y < -20); });
+    itens.forEach(function (it, i) { if (it.y < -20) itens[i] = novo(H + 20); });
+    desenhar();
+    requestAnimationFrame(passo);
+  }
+  function chuva(n) {
+    if (reduz) return;
+    for (let i = 0; i < n; i++) itens.push(novo(H + 10 + Math.random() * 120, true));
+  }
+  medir();
+  const qtd = Math.round(Math.min(40, (W * H) / 26000));
+  for (let i = 0; i < qtd; i++) itens.push(novo());
+  window.addEventListener('resize', function () { medir(); if (reduz) desenhar(); });
+  if (reduz) desenhar(); else requestAnimationFrame(passo);
+
+  /* ---------- Raspadinha ---------- */
+  const raspa = document.getElementById('raspa');
+  const rc = raspa.getContext('2d');
+  let raspando = false, limpo = false, contagem = 0;
+  function cobrir() {
+    const r = raspa.getBoundingClientRect();
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    raspa.width = r.width * d; raspa.height = r.height * d;
+    rc.setTransform(d, 0, 0, d, 0, 0);
+    const g = rc.createLinearGradient(0, 0, r.width, r.height);
+    g.addColorStop(0, '#d9c2f2'); g.addColorStop(.5, '#f2c4dc'); g.addColorStop(1, '#c4a2ea');
+    rc.globalCompositeOperation = 'source-over';
+    rc.fillStyle = g; rc.fillRect(0, 0, r.width, r.height);
+    rc.fillStyle = 'rgba(255,255,255,.35)';
+    for (let i = 0; i < 26; i++) { pataEm(rc, Math.random() * r.width, Math.random() * r.height, 10); }
+    rc.fillStyle = '#4b2148'; rc.textAlign = 'center'; rc.textBaseline = 'middle';
+    rc.font = '800 15px Nunito, system-ui, sans-serif';
+    rc.fillText('RASPE AQUI COM O DEDO', r.width / 2, r.height / 2 - 10);
+    rc.font = '600 13px Nunito, system-ui, sans-serif';
+    rc.fillText('ou com o mouse', r.width / 2, r.height / 2 + 14);
+  }
+  function pataEm(c, x, y, s) {
+    c.beginPath(); c.ellipse(x, y + s * 0.2, s * 0.45, s * 0.36, 0, 0, Math.PI * 2); c.fill();
+    [[-0.5, -0.25], [-0.18, -0.55], [0.18, -0.55], [0.5, -0.25]].forEach(function (d) {
+      c.beginPath(); c.arc(x + d[0] * s, y + d[1] * s, s * 0.17, 0, Math.PI * 2); c.fill();
+    });
+  }
+  function ponto(e) {
+    const r = raspa.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+  function riscar(e) {
+    if (!raspando || limpo) return;
+    const p = ponto(e);
+    rc.globalCompositeOperation = 'destination-out';
+    rc.beginPath(); rc.arc(p.x, p.y, 22, 0, Math.PI * 2); rc.fill();
+    if (++contagem % 12 === 0) conferir();
+  }
+  function conferir() {
+    const dados = rc.getImageData(0, 0, raspa.width, raspa.height).data;
+    let vazio = 0, total = 0;
+    for (let i = 3; i < dados.length; i += 64) { total++; if (dados[i] === 0) vazio++; }
+    if (vazio / total > 0.5) {
+      limpo = true; raspa.classList.add('limpo'); chuva(30);
+      setTimeout(function () { etapa.raspa = true; }, 2200);
+    }
+  }
+  raspa.addEventListener('pointerdown', function (e) { raspando = true; raspa.setPointerCapture(e.pointerId); riscar(e); });
+  raspa.addEventListener('pointermove', riscar);
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) { raspa.addEventListener(ev, function () { raspando = false; }); });
+  function prepararRaspa() { if (!limpo) cobrir(); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(prepararRaspa); else prepararRaspa();
+  prepararRaspa();
+  window.addEventListener('resize', prepararRaspa);
+
+  /* ---------- Pedidos (a animação é feita pelo CSS; aqui só a chuva e a rolagem) ---------- */
+  function aoMarcar(id, chave, atraso) {
+    const chk = document.getElementById(id);
+    chk.addEventListener('change', function () {
+      if (!chk.checked) { chk.checked = true; return; } // pedido feito não se desfaz
+      setTimeout(function () { chuva(14); }, atraso);
+      setTimeout(function () { etapa[chave] = true; }, atraso + 2500);
+    });
+  }
+  aoMarcar('chkEstrela', 'estrela', reduz ? 0 : 1300);
+  aoMarcar('chkTrevo', 'trevo', 0);
+})();
+</script>
+
+</body>
+</html>
